@@ -14,7 +14,7 @@ fun Application.authRouting(config: TokenConfig) {
     val tokenService: TokenService by inject()
 
     routing {
-        signUp(hashingService, userDataSource)
+        signUp(hashingService, userDataSource, tokenService, config)
         signIn(hashingService, userDataSource, tokenService, config)
         authenticate()
     }

@@ -10,15 +10,27 @@ import com.emily.auth.domain.security.token.TokenService
 import com.emily.auth.domain.verify.Verify
 import com.emily.auth.presentation.auth.AuthRequest
 import com.emily.auth.presentation.auth.AuthResponse
+import com.emily.auth.presentation.auth.json
 import io.ktor.http.*
 import io.ktor.server.auth.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 
+
+suspend fun RoutingCall.sendError(message: String) {
+    val serializedResponse = json.encodeToString(AuthResponse.serializer(), AuthResponse.ErrorResponse(message))
+    respond(
+        status = HttpStatusCode.BadRequest,
+        message = serializedResponse
+    )
+}
+
 fun Route.signUp(
     hashingService: HashingService,
-    userDataSource: UserDataSource
+    userDataSource: UserDataSource,
+    tokenService: TokenService,
+    tokenConfig: TokenConfig
 ) {
     post("signUp") {
         val request = call.receiveNullable<AuthRequest>() ?: kotlin.run {
@@ -28,17 +40,17 @@ fun Route.signUp(
 
         val verify = Verify.verifySignUp(request)
         if (!verify.success) {
-            call.respond(HttpStatusCode.BadRequest, AuthResponse.ErrorResponse(message = verify.message))
+            call.sendError(verify.message)
             return@post
         }
 
         if (userDataSource.getUserByUsername(request.username) != null) {
-            call.respond(HttpStatusCode.BadRequest, AuthResponse.ErrorResponse(message = "user taken"))
+            call.sendError("username is already taken")
             return@post
         }
 
         val saltedHash = hashingService.generateSaltedHash(request.password)
-        val user = User(
+        var user = User(
             username = request.username,
             password = saltedHash.hash,
             salt = saltedHash.salt
@@ -48,8 +60,21 @@ fun Route.signUp(
             call.respond(HttpStatusCode.InternalServerError)
             return@post
         }
+        user = userDataSource.getUserByUsername(user.username)!!
 
-        call.respond(HttpStatusCode.OK)
+        val token = tokenService.generate(
+            config = tokenConfig,
+            TokenClaim(
+                name = "userId",
+                value = user.id!!
+            )
+        )
+
+        // send success status
+        call.respond(
+            message = json.encodeToString(AuthResponse.serializer(), AuthResponse.SuccessResponse(token)),
+            status = HttpStatusCode.OK
+        )
     }
 }
 
@@ -66,10 +91,7 @@ fun Route.signIn(
         }
 
         val user = userDataSource.getUserByUsername(request.username) ?: kotlin.run {
-            call.respond(
-                HttpStatusCode.BadRequest,
-                "user not found"
-            )
+            call.sendError("user not found")
             return@post
         }
 
@@ -82,10 +104,7 @@ fun Route.signIn(
         )
 
         if (!isValidPassword) {
-            call.respond(
-                HttpStatusCode.BadRequest,
-                "Incorrect username or password"
-            )
+            call.sendError("Incorrect username or password")
             return@post
         }
 
@@ -97,13 +116,11 @@ fun Route.signIn(
             )
         )
 
+        // send success status
         call.respond(
-            HttpStatusCode.OK,
-            AuthResponse.SuccessResponse(
-                token = token
-            )
+            message = json.encodeToString(AuthResponse.serializer(), AuthResponse.SuccessResponse(token)),
+            status = HttpStatusCode.OK
         )
-
     }
 }
 
@@ -114,3 +131,4 @@ fun Route.authenticate() {
         }
     }
 }
+
