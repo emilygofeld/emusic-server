@@ -90,37 +90,37 @@ fun Route.signIn(
             return@post
         }
 
-        val user = userDataSource.getUserByUsername(request.username) ?: kotlin.run {
-            call.sendError("user not found")
-            return@post
+        val user = userDataSource.getUserByUsername(request.username)
+
+        if (user != null) {
+            val isValidPassword = hashingService.verify(
+                value = request.password,
+                saltedHash = SaltedHash(
+                    hash = user.password,
+                    salt = user.salt
+                )
+            )
+
+            if (isValidPassword) {
+                val token = tokenService.generate(
+                    config = tokenConfig,
+                    TokenClaim(
+                        name = "userId",
+                        value = user.id!!
+                    )
+                )
+
+                // send success status
+                call.respond(
+                    message = json.encodeToString(AuthResponse.serializer(), AuthResponse.SuccessResponse(token)),
+                    status = HttpStatusCode.OK
+                )
+                return@post
+            }
         }
 
-        val isValidPassword = hashingService.verify(
-            value = request.password,
-            saltedHash = SaltedHash(
-                hash = user.password,
-                salt = user.salt
-            )
-        )
-
-        if (!isValidPassword) {
-            call.sendError("Incorrect username or password")
-            return@post
-        }
-
-        val token = tokenService.generate(
-            config = tokenConfig,
-            TokenClaim(
-                name = "userId",
-                value = user.id!!
-            )
-        )
-
-        // send success status
-        call.respond(
-            message = json.encodeToString(AuthResponse.serializer(), AuthResponse.SuccessResponse(token)),
-            status = HttpStatusCode.OK
-        )
+        call.sendError("Incorrect username or password")
+        return@post
     }
 }
 
