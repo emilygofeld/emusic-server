@@ -2,6 +2,8 @@ package com.emily
 
 import com.emily.auth.di.authModule
 import com.emily.auth.domain.security.token.TokenConfig
+import com.emily.di.appModule
+import com.emily.music.di.musicModule
 import com.emily.plugins.configureMonitoring
 import com.emily.plugins.configureRouting
 import com.emily.plugins.configureSecurity
@@ -17,7 +19,9 @@ fun main(args: Array<String>) {
 fun Application.module() {
     startKoin {
         modules(
-            authModule
+            appModule,
+            authModule,
+            musicModule
         )
     }
 

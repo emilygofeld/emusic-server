@@ -6,8 +6,8 @@ import com.emily.music.domain.models.Playlist
 import com.emily.music.domain.models.Song
 import com.emily.music.domain.models.UserData
 import com.emily.music.domain.repository.MusicRepository
-import com.emily.music.domain.repository.SongDataSource
-import com.emily.music.domain.repository.UserDataDataSource
+import com.emily.music.domain.datasource.SongDataSource
+import com.emily.music.domain.datasource.UserDataDataSource
 
 class MusicRepositoryImpl(
     private val playlistDataSource: PlaylistDataSource,

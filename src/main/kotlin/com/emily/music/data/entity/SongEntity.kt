@@ -8,7 +8,7 @@ import org.bson.types.ObjectId
 @Serializable
 data class SongEntity(
     val title: String,
-    val singer: List<String>,
+    val artists: List<String>,
     val length: Int,
     @BsonId
     val id: ID = ObjectId().toString()
