@@ -11,6 +11,7 @@ interface MusicRepository {
     suspend fun getPlaylist(playlistId: ID): Playlist?
     suspend fun createPlaylistForUser(playlist: Playlist, userId: ID)
     suspend fun removePlaylistFromUser(playlistId: ID, userId: ID)
+    suspend fun getUserPlaylists(userId: ID): List<Playlist>
     suspend fun getSong(songId: ID): Song?
     suspend fun getUserData(userId: ID): UserData?
 }

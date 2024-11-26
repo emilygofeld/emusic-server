@@ -53,6 +53,18 @@ class MusicRepositoryImpl(
         userDataDataSource.updateUserData(userData)
     }
 
+    override suspend fun getUserPlaylists(userId: ID): List<Playlist> {
+        val userData = userDataDataSource.getUserData(userId) ?: return emptyList()
+        var playlists = emptyList<Playlist>()
+        userData.playlists.forEach { id ->
+            playlistDataSource.getPlaylist(id)?.let { playlist ->
+                playlists += playlist
+            }
+        }
+        return playlists
+    }
+
+
     override suspend fun getSong(songId: ID): Song? {
         return songDataSource.getSong(songId)
     }
