@@ -18,3 +18,5 @@ val musicModule = module {
 
     single<MusicRepository> {MusicRepositoryImpl(get<PlaylistDataSource>(), get<UserDataDataSource>(), get<SongDataSource>())}
 }
+
+
