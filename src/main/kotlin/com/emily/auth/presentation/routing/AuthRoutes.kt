@@ -10,19 +10,21 @@ import com.emily.auth.domain.security.token.TokenService
 import com.emily.auth.domain.verify.Verify
 import com.emily.auth.presentation.auth.AuthRequest
 import com.emily.auth.presentation.auth.AuthResponse
-import com.emily.auth.presentation.auth.json
 import io.ktor.http.*
 import io.ktor.server.auth.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 
 suspend fun RoutingCall.sendError(message: String) {
-    val serializedResponse = json.encodeToString(AuthResponse.serializer(), AuthResponse.ErrorResponse(message))
+    val response: AuthResponse = AuthResponse.ErrorResponse(message)
+
     respond(
         status = HttpStatusCode.BadRequest,
-        message = serializedResponse
+        message = Json.encodeToString(response)
     )
 }
 
@@ -72,7 +74,7 @@ fun Route.signUp(
 
         // send success status
         call.respond(
-            message = json.encodeToString(AuthResponse.serializer(), AuthResponse.SuccessResponse(token)),
+            message = Json.encodeToString(AuthResponse.serializer(), AuthResponse.SuccessResponse(token)),
             status = HttpStatusCode.OK
         )
     }
@@ -112,7 +114,7 @@ fun Route.signIn(
 
                 // send success status
                 call.respond(
-                    message = json.encodeToString(AuthResponse.serializer(), AuthResponse.SuccessResponse(token)),
+                    message = Json.encodeToString(AuthResponse.serializer(), AuthResponse.SuccessResponse(token)),
                     status = HttpStatusCode.OK
                 )
                 return@post

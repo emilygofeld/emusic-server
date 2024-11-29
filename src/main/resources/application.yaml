@@ -7,5 +7,5 @@ ktor:
 jwt:
   issuer: "http://127.0.0.1:8080"
   domain: "http://127.0.0.1:8080"
-  audience: "spotify-users"
-  realm: "ktor spot-app"
+  audience: "emusic-users"
+  realm: "ktor music-app"
