@@ -14,43 +14,43 @@ class MusicRepositoryImpl(
     private val userDataDataSource: UserDataDataSource,
     private val songDataSource: SongDataSource
 ): MusicRepository {
-    override suspend fun addSongToPlaylist(songId: ID, playlistId: String) {
-        var playlist = playlistDataSource.getPlaylist(playlistId) ?: return
+    override suspend fun addSongToPlaylist(songId: ID, playlistId: String): Boolean {
+        var playlist = playlistDataSource.getPlaylist(playlistId) ?: return false
         if (playlist.songs.contains(songId)) {
-            return
+            return false
         }
 
         playlist = playlist.copy(songs = playlist.songs + songId)
-        playlistDataSource.updatePlaylist(playlist)
+        return playlistDataSource.updatePlaylist(playlist)
     }
 
-    override suspend fun removeSongFromPlaylist(songId: ID, playlistId: ID) {
-        var playlist = playlistDataSource.getPlaylist(playlistId) ?: return
+    override suspend fun removeSongFromPlaylist(songId: ID, playlistId: ID): Boolean {
+        var playlist = playlistDataSource.getPlaylist(playlistId) ?: return false
         if (playlist.songs.contains(songId)) {
-            return
+            return false
         }
         playlist = playlist.copy(songs = playlist.songs - songId)
-        playlistDataSource.updatePlaylist(playlist)
+        return playlistDataSource.updatePlaylist(playlist)
     }
 
     override suspend fun getPlaylist(playlistId: ID): Playlist? {
         return playlistDataSource.getPlaylist(playlistId)
     }
 
-    override suspend fun createPlaylistForUser(playlist: Playlist, userId: ID) {
-        var userData = userDataDataSource.getUserData(userId) ?: return
-        playlistDataSource.insertPlaylist(playlist)
+    override suspend fun createPlaylistForUser(playlist: Playlist, userId: ID): String? {
+        var userData = userDataDataSource.getUserData(userId) ?: return null
+        val playlistId = playlistDataSource.insertPlaylist(playlist) ?: return null
 
         userData = userData.copy(playlists = userData.playlists + playlist.id)
-        userDataDataSource.updateUserData(userData)
+        return if(userDataDataSource.updateUserData(userData)) playlistId else null
     }
 
-    override suspend fun removePlaylistFromUser(playlistId: ID, userId: ID) {
-        var userData = userDataDataSource.getUserData(userId) ?: return
-        playlistDataSource.removePlaylist(playlistId)
+    override suspend fun removePlaylistFromUser(playlistId: ID, userId: ID): Boolean {
+        var userData = userDataDataSource.getUserData(userId) ?: return false
+        if (!playlistDataSource.removePlaylist(playlistId)) return false
 
         userData = userData.copy(playlists = userData.playlists - playlistId)
-        userDataDataSource.updateUserData(userData)
+        return userDataDataSource.updateUserData(userData)
     }
 
     override suspend fun getUserPlaylists(userId: ID): List<Playlist> {

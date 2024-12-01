@@ -8,5 +8,5 @@ data class Song(
     val title: String,
     val artists: List<String>,
     val length: Int,
-    val id: ID
+    val id: ID = ""
 )

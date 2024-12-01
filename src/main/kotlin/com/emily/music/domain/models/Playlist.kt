@@ -6,8 +6,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Playlist(
     val title: String,
-    val songs: List<ID>,
+    val songs: List<ID> = emptyList(),
     val ownerId: ID,
-    val id: ID
+    val id: ID = ""
 )
 

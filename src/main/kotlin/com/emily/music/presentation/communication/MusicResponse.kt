@@ -12,7 +12,7 @@ sealed class MusicResponse {
 
     // for success/error operations
     @Serializable
-    data class SuccessResponse(override val code: Int = ProtocolCode.SUCCESS): MusicResponse()
+    data class SuccessResponse(override val code: Int = ProtocolCode.SUCCESS, val data: String?): MusicResponse()
     @Serializable
     data class ErrorResponse(override val code: Int = ProtocolCode.ERROR, val message: String): MusicResponse()
 
@@ -24,8 +24,4 @@ sealed class MusicResponse {
     data class GetSong(override val code: Int = ProtocolCode.GET_SONG, val song: Song): MusicResponse()
     @Serializable
     data class GetUserData(override val code: Int = ProtocolCode.GET_USER_DATA, val userData: UserData): MusicResponse()
-    @Serializable
-    data class GetCurrUserData(override val code: Int = ProtocolCode.GET_CURR_USER_DATA, val userData: UserData): MusicResponse()
-    @Serializable
-    data class GetCurrUserPlaylists(override val code: Int = ProtocolCode.GET_CURR_USER_PLAYLISTS, val playlists: List<Playlist>): MusicResponse()
 }

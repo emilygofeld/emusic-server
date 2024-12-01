@@ -8,6 +8,8 @@ import com.emily.music.domain.datasource.PlaylistDataSource
 import com.emily.music.domain.datasource.SongDataSource
 import com.emily.music.domain.datasource.UserDataDataSource
 import com.emily.music.domain.repository.MusicRepository
+import com.emily.music.presentation.Controller
+import io.ktor.server.routing.*
 import org.koin.dsl.module
 import org.litote.kmongo.coroutine.CoroutineDatabase
 
@@ -17,6 +19,8 @@ val musicModule = module {
     single<SongDataSource> { MongoSongDataSource(get<CoroutineDatabase>()) }
 
     single<MusicRepository> {MusicRepositoryImpl(get<PlaylistDataSource>(), get<UserDataDataSource>(), get<SongDataSource>())}
+
+    factory<Controller> { (call: RoutingCall) -> Controller(get<MusicRepository>(), call)}
 }
 
 

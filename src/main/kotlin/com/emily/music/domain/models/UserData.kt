@@ -7,5 +7,5 @@ import kotlinx.serialization.Serializable
 data class UserData(
     val name: String,
     val playlists: List<ID>,
-    val id: ID
+    val id: ID = ""
 )

@@ -16,8 +16,9 @@ class MongoPlaylistDataSource(
 
     private val playlists = db.getCollection<PlaylistEntity>(collectionName = "Playlists")
 
-    override suspend fun insertPlaylist(playlist: Playlist): Boolean {
-        return playlists.insertOne(playlist.toPlaylistEntity()).wasAcknowledged()
+    override suspend fun insertPlaylist(playlist: Playlist): String? {
+        val entity = playlist.toPlaylistEntity()
+        return if (playlists.insertOne(entity).wasAcknowledged()) entity.id else null
     }
 
     override suspend fun getPlaylist(id: ID): Playlist? {
