@@ -12,7 +12,6 @@ import com.emily.auth.presentation.auth.AuthRequest
 import com.emily.auth.presentation.auth.AuthResponse
 import com.emily.core.UserCreatedEvent
 import com.emily.core.UserDataObserver
-import com.emily.music.domain.datasource.UserDataDataSource
 import io.ktor.http.*
 import io.ktor.server.auth.*
 import io.ktor.server.request.*
