@@ -24,8 +24,9 @@ fun Route.getAndDeserializeRequest(
 
             val principal = call.principal<JWTPrincipal>()
             val connectedUserId = principal?.payload?.getClaim("userId")?.asString()
+            val connectedUsername = principal?.payload?.getClaim("username")?.asString()
 
-            if (connectedUserId == null) {
+            if (connectedUserId == null || connectedUsername == null) {
                 call.respond(MusicResponse.ErrorResponse(message = "Invalid token"))
                 return@post
             }
@@ -39,7 +40,7 @@ fun Route.getAndDeserializeRequest(
                 is MusicRequest.AddSongToPlaylist ->
                     controller.addSongToPlaylist(request)
                 is MusicRequest.CreatePlaylist ->
-                    controller.createPlaylist(request.title, connectedUserId)
+                    controller.createPlaylist(request.title, connectedUserId, connectedUsername)
                 is MusicRequest.DeletePlaylist ->
                     controller.deletePlaylist(request.playlistId, connectedUserId)
                 is MusicRequest.DeleteSongFromPlaylist ->

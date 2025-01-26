@@ -9,6 +9,7 @@ import org.bson.types.ObjectId
 data class PlaylistEntity(
     val title: String,
     val songs: List<ID>,
+    val ownerName: String,
     val ownerId: ID,
     @BsonId
     val id: ID = ObjectId().toString()

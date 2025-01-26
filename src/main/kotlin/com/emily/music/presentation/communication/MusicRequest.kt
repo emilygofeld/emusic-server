@@ -2,7 +2,6 @@ package com.emily.music.presentation.communication
 
 import com.emily.core.constants.ID
 import com.emily.core.constants.ProtocolCode
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable

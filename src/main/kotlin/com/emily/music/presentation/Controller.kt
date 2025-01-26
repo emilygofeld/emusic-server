@@ -8,8 +8,6 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import kotlin.reflect.KClass
-import kotlin.reflect.full.safeCast
 
 
 class Controller(
@@ -26,16 +24,6 @@ class Controller(
         respond(message = json.encodeToString(MusicResponse.ErrorResponse(message = message)))
     }
 
-    private suspend inline fun <reified T : MusicResponse> RoutingCall.check(response: MusicResponse, type: KClass<T>) {
-        val json = Json { encodeDefaults = true }
-        val castedResponse = type.safeCast(response)
-        if (castedResponse != null) {
-            respond(castedResponse)
-        } else {
-            respond("Invalid type")
-        }
-    }
-
     suspend fun addSongToPlaylist(
         request: MusicRequest.AddSongToPlaylist,
     ) {
@@ -48,16 +36,14 @@ class Controller(
     suspend fun createPlaylist(
         title: String,
         userId: String,
+        username: String
     ) {
         val playlistId = musicRepository.createPlaylistForUser(
-            Playlist(title = title, ownerId = userId),
+            Playlist(title = title, ownerName = username, ownerId = userId),
             userId
         )
 
-        call.check(
-            MusicResponse.SuccessResponse(data = "Check Worked"),
-            type = MusicResponse.SuccessResponse::class
-        )
+        call.sendResponse(MusicResponse.SuccessResponse(data = null))
 
         if (playlistId == null)
             call.sendError("Server Error")
