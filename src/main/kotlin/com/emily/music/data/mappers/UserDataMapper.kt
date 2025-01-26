@@ -5,7 +5,6 @@ import com.emily.music.domain.models.UserData
 
 fun UserDataEntity.toUserData(): UserData {
     return UserData(
-        name = name,
         playlists = playlists,
         id = id
     )
@@ -13,7 +12,7 @@ fun UserDataEntity.toUserData(): UserData {
 
 fun UserData.toUserDataEntity(): UserDataEntity {
     return UserDataEntity(
-        name = name,
-        playlists = playlists
+        playlists = playlists,
+        id = id
     )
 }

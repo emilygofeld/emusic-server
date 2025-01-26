@@ -1,6 +1,6 @@
 package com.emily.music.domain.repository
 
-import com.emily.core.ID
+import com.emily.core.constants.ID
 import com.emily.music.domain.models.Playlist
 import com.emily.music.domain.models.Song
 import com.emily.music.domain.models.UserData
@@ -13,5 +13,6 @@ interface MusicRepository {
     suspend fun removePlaylistFromUser(playlistId: ID, userId: ID): Boolean
     suspend fun getUserPlaylists(userId: ID): List<Playlist>
     suspend fun getSong(songId: ID): Song?
+    suspend fun insertUserData(userId: ID): Boolean
     suspend fun getUserData(userId: ID): UserData?
 }

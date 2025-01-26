@@ -1,6 +1,6 @@
 package com.emily.music.data.datasource
 
-import com.emily.core.ID
+import com.emily.core.constants.ID
 import com.emily.music.data.entity.PlaylistEntity
 import com.emily.music.data.mappers.toPlaylist
 import com.emily.music.data.mappers.toPlaylistEntity

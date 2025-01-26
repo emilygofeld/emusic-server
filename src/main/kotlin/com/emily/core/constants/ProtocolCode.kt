@@ -1,4 +1,4 @@
-package com.emily.core
+package com.emily.core.constants
 
 import kotlinx.serialization.Serializable
 

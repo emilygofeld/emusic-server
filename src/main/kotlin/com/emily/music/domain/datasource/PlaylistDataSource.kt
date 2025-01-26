@@ -1,6 +1,6 @@
 package com.emily.music.domain.datasource
 
-import com.emily.core.ID
+import com.emily.core.constants.ID
 import com.emily.music.domain.models.Playlist
 
 interface PlaylistDataSource {

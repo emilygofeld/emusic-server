@@ -8,19 +8,32 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import kotlin.reflect.KClass
+import kotlin.reflect.full.safeCast
+
 
 class Controller(
     private val musicRepository: MusicRepository,
     private val call: RoutingCall
 ) {
-
-    private suspend fun RoutingCall.sendResponse(response: MusicResponse) {
-        respond(message = Json.encodeToString(response))
+    private suspend inline fun <reified T> RoutingCall.sendResponse(response: T) {
+        val json = Json { encodeDefaults = true }
+        respond(message = json.encodeToString(response))
     }
 
     private suspend fun RoutingCall.sendError(message: String) {
-        val response: MusicResponse = MusicResponse.ErrorResponse(message = message)
-        respond(message = Json.encodeToString(response))
+        val json = Json { encodeDefaults = true }
+        respond(message = json.encodeToString(MusicResponse.ErrorResponse(message = message)))
+    }
+
+    private suspend inline fun <reified T : MusicResponse> RoutingCall.check(response: MusicResponse, type: KClass<T>) {
+        val json = Json { encodeDefaults = true }
+        val castedResponse = type.safeCast(response)
+        if (castedResponse != null) {
+            respond(castedResponse)
+        } else {
+            respond("Invalid type")
+        }
     }
 
     suspend fun addSongToPlaylist(
@@ -39,6 +52,11 @@ class Controller(
         val playlistId = musicRepository.createPlaylistForUser(
             Playlist(title = title, ownerId = userId),
             userId
+        )
+
+        call.check(
+            MusicResponse.SuccessResponse(data = "Check Worked"),
+            type = MusicResponse.SuccessResponse::class
         )
 
         if (playlistId == null)

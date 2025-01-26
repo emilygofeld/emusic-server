@@ -10,6 +10,9 @@ import com.emily.auth.domain.security.token.TokenService
 import com.emily.auth.domain.verify.Verify
 import com.emily.auth.presentation.auth.AuthRequest
 import com.emily.auth.presentation.auth.AuthResponse
+import com.emily.core.UserCreatedEvent
+import com.emily.core.UserDataObserver
+import com.emily.music.domain.datasource.UserDataDataSource
 import io.ktor.http.*
 import io.ktor.server.auth.*
 import io.ktor.server.request.*
@@ -72,7 +75,8 @@ fun Route.signUp(
             )
         )
 
-        // send success status
+        UserDataObserver.sendEvent(UserCreatedEvent(userId = user.id!!))
+
         call.respond(
             message = Json.encodeToString(AuthResponse.serializer(), AuthResponse.SuccessResponse(token)),
             status = HttpStatusCode.OK

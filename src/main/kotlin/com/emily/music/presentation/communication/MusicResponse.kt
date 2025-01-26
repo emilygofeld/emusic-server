@@ -1,6 +1,6 @@
 package com.emily.music.presentation.communication
 
-import com.emily.core.ProtocolCode
+import com.emily.core.constants.ProtocolCode
 import com.emily.music.domain.models.Playlist
 import com.emily.music.domain.models.Song
 import com.emily.music.domain.models.UserData

@@ -1,6 +1,6 @@
 package com.emily.music.data.datasource
 
-import com.emily.core.ID
+import com.emily.core.constants.ID
 import com.emily.music.data.entity.UserDataEntity
 import com.emily.music.data.mappers.toUserData
 import com.emily.music.data.mappers.toUserDataEntity
@@ -14,6 +14,10 @@ class MongoUserDataDataSource(
 ): UserDataDataSource {
 
     private val userDataCollection = db.getCollection<UserDataEntity>(collectionName = "UserData")
+
+    override suspend fun insertUserData(userId: ID): Boolean {
+        return userDataCollection.insertOne(UserDataEntity(emptyList(), userId)).wasAcknowledged()
+    }
 
     override suspend fun getUserData(userId: ID): UserData? {
         return userDataCollection.findOne(UserDataEntity::id eq userId)?.toUserData()

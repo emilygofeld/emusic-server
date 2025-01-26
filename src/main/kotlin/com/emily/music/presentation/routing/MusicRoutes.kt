@@ -1,5 +1,6 @@
 package com.emily.music.presentation.routing
 
+import com.emily.music.domain.repository.MusicRepository
 import com.emily.music.presentation.Controller
 import com.emily.music.presentation.communication.MusicRequest
 import com.emily.music.presentation.communication.MusicResponse
@@ -10,10 +11,10 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.json.Json
-import org.koin.core.parameter.parametersOf
-import org.koin.ktor.ext.getKoin
 
-fun Route.getAndDeserializeRequest() {
+fun Route.getAndDeserializeRequest(
+    musicRepository: MusicRepository
+) {
     authenticate {
         post("emusic") {
             val jsonRequest = call.receiveNullable<String>() ?: kotlin.run {
@@ -29,20 +30,34 @@ fun Route.getAndDeserializeRequest() {
                 return@post
             }
 
-            val controller: Controller = getKoin().get { parametersOf(call) }
+//            val controller by inject<Controller> {parametersOf(call)}
+            val controller = Controller(musicRepository, call)
+
+            println(Json.decodeFromString(RequestDeserializer, jsonRequest))
 
             when (val request = Json.decodeFromString(RequestDeserializer, jsonRequest)) {
-                is MusicRequest.AddSongToPlaylist -> controller.addSongToPlaylist(request)
-                is MusicRequest.CreatePlaylist -> controller.createPlaylist(request.title, connectedUserId)
-                is MusicRequest.DeletePlaylist -> controller.deletePlaylist(request.playlistId, connectedUserId)
-                is MusicRequest.DeleteSongFromPlaylist -> controller.deleteSongFromPlaylist(request)
-                is MusicRequest.GetCurrUserData -> controller.getUserData(connectedUserId)
-                is MusicRequest.GetCurrUserPlaylists -> controller.getUserPlaylists(connectedUserId)
-                is MusicRequest.GetPlaylist -> controller.getPlaylist(request.playlistId)
-                is MusicRequest.GetSong -> controller.getSong(request.songId)
-                is MusicRequest.GetUserData -> controller.getUserData(request.userId)
-                is MusicRequest.GetUserPlaylists -> controller.getUserPlaylists(request.userId)
+                is MusicRequest.AddSongToPlaylist ->
+                    controller.addSongToPlaylist(request)
+                is MusicRequest.CreatePlaylist ->
+                    controller.createPlaylist(request.title, connectedUserId)
+                is MusicRequest.DeletePlaylist ->
+                    controller.deletePlaylist(request.playlistId, connectedUserId)
+                is MusicRequest.DeleteSongFromPlaylist ->
+                    controller.deleteSongFromPlaylist(request)
+                is MusicRequest.GetCurrUserData ->
+                    controller.getUserData(connectedUserId)
+                is MusicRequest.GetCurrUserPlaylists ->
+                    controller.getUserPlaylists(connectedUserId)
+                is MusicRequest.GetPlaylist ->
+                    controller.getPlaylist(request.playlistId)
+                is MusicRequest.GetSong ->
+                    controller.getSong(request.songId)
+                is MusicRequest.GetUserData ->
+                    controller.getUserData(request.userId)
+                is MusicRequest.GetUserPlaylists ->
+                    controller.getUserPlaylists(request.userId)
             }
         }
     }
 }
+
