@@ -7,6 +7,8 @@ import com.emily.music.domain.models.UserData
 
 interface MusicRepository {
     suspend fun addSongToPlaylist(songId: ID, playlistId: ID): Boolean
+    suspend fun addSongToFavorites(songId: ID, userId: ID): Boolean
+    suspend fun removeSongFromFavorites(songId: ID, userId: ID): Boolean
     suspend fun removeSongFromPlaylist(songId: ID, playlistId: ID): Boolean
     suspend fun getPlaylist(playlistId: ID): Playlist?
     suspend fun createPlaylistForUser(playlist: Playlist, userId: ID): String?

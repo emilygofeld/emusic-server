@@ -5,4 +5,5 @@ import com.emily.music.domain.models.Song
 
 interface SongDataSource {
     suspend fun getSong(songId: ID): Song?
+    suspend fun updateSong(song: Song): Boolean
 }

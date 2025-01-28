@@ -8,7 +8,7 @@ import org.bson.types.ObjectId
 @Serializable
 data class PlaylistEntity(
     val title: String,
-    val songs: List<ID>,
+    val songs: List<SongEntity>,
     val ownerName: String,
     val ownerId: ID,
     @BsonId

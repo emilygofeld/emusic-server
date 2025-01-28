@@ -8,6 +8,19 @@ fun SongEntity.toSong(): Song {
         title = title,
         artists = artists,
         length = length,
+        isFavorite = isFavorite,
+        url = url,
+        id = id
+    )
+}
+
+fun Song.toSongEntity(): SongEntity {
+    return SongEntity(
+        title = title,
+        artists = artists,
+        length = length,
+        isFavorite = isFavorite,
+        url = url,
         id = id
     )
 }

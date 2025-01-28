@@ -8,4 +8,5 @@ interface PlaylistDataSource {
     suspend fun getPlaylist(id: ID): Playlist?
     suspend fun updatePlaylist(playlist: Playlist): Boolean
     suspend fun removePlaylist(playlistId: ID): Boolean
+    suspend fun getUserFavoritesPlaylists(userId: ID): Playlist?
 }

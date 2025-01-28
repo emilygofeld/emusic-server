@@ -14,22 +14,43 @@ class MusicRepositoryImpl(
     private val userDataDataSource: UserDataDataSource,
     private val songDataSource: SongDataSource
 ): MusicRepository {
-    override suspend fun addSongToPlaylist(songId: ID, playlistId: String): Boolean {
+    override suspend fun addSongToPlaylist(songId: ID, playlistId: ID): Boolean {
         var playlist = playlistDataSource.getPlaylist(playlistId) ?: return false
-        if (playlist.songs.contains(songId)) {
+        if (playlist.songs.any { it.id == songId }) {
             return false
         }
-
-        playlist = playlist.copy(songs = playlist.songs + songId)
+        val songToAdd = songDataSource.getSong(songId) ?: return false
+        playlist = playlist.copy(songs = playlist.songs + songToAdd)
         return playlistDataSource.updatePlaylist(playlist)
+    }
+
+    override suspend fun addSongToFavorites(songId: ID, userId: ID): Boolean {
+        val favoritesPlaylist = playlistDataSource.getUserFavoritesPlaylists(userId) ?: return false
+        val song = favoritesPlaylist.songs.find { song ->  song.id == songId} ?: return false
+
+        song.isFavorite = true
+        songDataSource.updateSong(song)
+
+        return addSongToPlaylist(songId, favoritesPlaylist.id)
+    }
+
+    override suspend fun removeSongFromFavorites(songId: ID, userId: ID): Boolean {
+        val favoritesPlaylist = playlistDataSource.getUserFavoritesPlaylists(userId) ?: return false
+        val song = favoritesPlaylist.songs.find { song ->  song.id == songId} ?: return false
+
+        song.isFavorite = false
+        songDataSource.updateSong(song)
+
+        return removeSongFromPlaylist(songId, favoritesPlaylist.id)
     }
 
     override suspend fun removeSongFromPlaylist(songId: ID, playlistId: ID): Boolean {
         var playlist = playlistDataSource.getPlaylist(playlistId) ?: return false
-        if (playlist.songs.contains(songId)) {
+        if (!playlist.songs.any { it.id == songId }) {
             return false
         }
-        playlist = playlist.copy(songs = playlist.songs - songId)
+        val updatedSongs = playlist.songs.filter { it.id != songId }
+        playlist = playlist.copy(songs = updatedSongs)
         return playlistDataSource.updatePlaylist(playlist)
     }
 

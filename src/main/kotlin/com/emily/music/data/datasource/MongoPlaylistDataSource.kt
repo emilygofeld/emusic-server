@@ -6,6 +6,7 @@ import com.emily.music.data.mappers.toPlaylist
 import com.emily.music.data.mappers.toPlaylistEntity
 import com.emily.music.domain.datasource.PlaylistDataSource
 import com.emily.music.domain.models.Playlist
+import org.litote.kmongo.and
 import org.litote.kmongo.coroutine.CoroutineDatabase
 import org.litote.kmongo.eq
 
@@ -31,5 +32,9 @@ class MongoPlaylistDataSource(
 
     override suspend fun removePlaylist(playlistId: ID): Boolean {
         return playlists.deleteOne(PlaylistEntity::id eq playlistId).wasAcknowledged()
+    }
+
+    override suspend fun getUserFavoritesPlaylists(userId: ID): Playlist? {
+        return playlists.findOne(and(PlaylistEntity::ownerId eq userId, PlaylistEntity::title eq "Favorites"))?.toPlaylist()
     }
 }

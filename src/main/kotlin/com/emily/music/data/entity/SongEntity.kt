@@ -10,6 +10,8 @@ data class SongEntity(
     val title: String,
     val artists: List<String>,
     val length: Int,
+    val isFavorite: Boolean = false,
+    val url: String,
     @BsonId
     val id: ID = ObjectId().toString()
 )

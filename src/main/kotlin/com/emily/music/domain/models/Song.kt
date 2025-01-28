@@ -4,9 +4,11 @@ import com.emily.core.constants.ID
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Song(
+class Song(
     val title: String,
     val artists: List<String>,
     val length: Int,
+    var isFavorite: Boolean = false,
+    val url: String = "",
     val id: ID = ""
 )

@@ -28,5 +28,9 @@ sealed class MusicRequest {
     data class GetCurrUserData(override val code: Int = ProtocolCode.GET_CURR_USER_DATA): MusicRequest()
     @Serializable
     data class GetCurrUserPlaylists(override val code: Int = ProtocolCode.GET_CURR_USER_PLAYLISTS): MusicRequest()
+    @Serializable
+    data class AddSongToFavorites(override val code: Int = ProtocolCode.ADD_SONG_TO_FAVORITES, val songId: ID): MusicRequest()
+    @Serializable
+    data class DeleteSongFromFavorites(override val code: Int = ProtocolCode.DELETE_SONG_FROM_FAVORITES, val songId: ID): MusicRequest()
 }
 

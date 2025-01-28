@@ -1,5 +1,6 @@
 package com.emily.music.presentation
 
+import com.emily.core.constants.ID
 import com.emily.music.domain.models.Playlist
 import com.emily.music.domain.repository.MusicRepository
 import com.emily.music.presentation.communication.MusicRequest
@@ -108,5 +109,19 @@ class Controller(
             call.sendError("Server Error: Incorrect id")
         else
             call.sendResponse(MusicResponse.GetSong(song = song))
+    }
+
+    suspend fun addSongToFavorites(songId: ID, userId: ID) {
+        if (!musicRepository.addSongToFavorites(songId, userId))
+            call.sendError("Server Error")
+        else
+            call.sendResponse(MusicResponse.SuccessResponse(data = null))
+    }
+
+    suspend fun removeSongFromFavorites(songId: ID, userId: ID) {
+        if (!musicRepository.removeSongFromFavorites(songId, userId))
+            call.sendError("Server Error")
+        else
+            call.sendResponse(MusicResponse.SuccessResponse(data = null))
     }
 }

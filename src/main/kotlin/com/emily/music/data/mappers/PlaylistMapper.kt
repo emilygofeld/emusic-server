@@ -6,7 +6,7 @@ import com.emily.music.domain.models.Playlist
 fun PlaylistEntity.toPlaylist(): Playlist {
     return Playlist(
         title = title,
-        songs = songs,
+        songs = songs.map { entity -> entity.toSong() },
         ownerName = ownerName,
         ownerId = ownerId,
         id = id
@@ -16,7 +16,7 @@ fun PlaylistEntity.toPlaylist(): Playlist {
 fun Playlist.toPlaylistEntity(): PlaylistEntity {
     return PlaylistEntity(
         title = title,
-        songs = songs,
+        songs = songs.map { song -> song.toSongEntity() },
         ownerName = ownerName,
         ownerId = ownerId
     )

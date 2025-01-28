@@ -57,6 +57,10 @@ fun Route.getAndDeserializeRequest(
                     controller.getUserData(request.userId)
                 is MusicRequest.GetUserPlaylists ->
                     controller.getUserPlaylists(request.userId)
+                is MusicRequest.AddSongToFavorites ->
+                    controller.addSongToFavorites(request.songId, connectedUserId)
+                is MusicRequest.DeleteSongFromFavorites ->
+                    controller.removeSongFromFavorites(request.songId, connectedUserId)
             }
         }
     }
