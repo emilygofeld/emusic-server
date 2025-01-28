@@ -1,12 +1,20 @@
 package com.emily.music.domain.usecase
 
-import com.emily.core.UserDataObserver
+import com.emily.core.UserCreationObserver
+import com.emily.music.domain.models.Playlist
 import com.emily.music.domain.repository.MusicRepository
 
-object UserDataListener {
+object UserCreationListener {
     suspend fun listen(musicRepository: MusicRepository) {
-        UserDataObserver.eventFlow.collect { event ->
+        UserCreationObserver.eventFlow.collect { event ->
             musicRepository.insertUserData(event.userId)
+
+            val playlist = Playlist(
+                title = "Favorites",
+                ownerName = event.username,
+                ownerId = event.userId
+            )
+            musicRepository.createPlaylistForUser(playlist, event.userId)
         }
     }
 }

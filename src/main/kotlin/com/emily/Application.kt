@@ -5,7 +5,7 @@ import com.emily.auth.domain.security.token.TokenConfig
 import com.emily.di.appModule
 import com.emily.music.di.musicModule
 import com.emily.music.domain.repository.MusicRepository
-import com.emily.music.domain.usecase.UserDataListener
+import com.emily.music.domain.usecase.UserCreationListener
 import com.emily.plugins.configureMonitoring
 import com.emily.plugins.configureRouting
 import com.emily.plugins.configureSecurity
@@ -41,7 +41,8 @@ fun Application.module() {
     val musicRepository: MusicRepository by inject()
 
     GlobalScope.launch {
-        UserDataListener.listen(musicRepository)
+        UserCreationListener.listen(musicRepository)
+
     }
 
     configureSerialization()
