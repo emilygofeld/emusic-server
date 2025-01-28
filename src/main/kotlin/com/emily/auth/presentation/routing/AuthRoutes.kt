@@ -11,7 +11,7 @@ import com.emily.auth.domain.verify.Verify
 import com.emily.auth.presentation.auth.AuthRequest
 import com.emily.auth.presentation.auth.AuthResponse
 import com.emily.core.UserCreatedEvent
-import com.emily.core.UserDataObserver
+import com.emily.core.UserCreationObserver
 import io.ktor.http.*
 import io.ktor.server.auth.*
 import io.ktor.server.request.*
@@ -78,7 +78,7 @@ fun Route.signUp(
             )
         )
 
-        UserDataObserver.sendEvent(UserCreatedEvent(userId = user.id!!))
+        UserCreationObserver.sendEvent(UserCreatedEvent(userId = user.id!!, user.username))
 
         call.respond(
             message = Json.encodeToString(AuthResponse.serializer(), AuthResponse.SuccessResponse(token)),

@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.Flow
 
-object UserDataObserver {
+object UserCreationObserver {
 
     private val _eventFlow = MutableSharedFlow<UserCreatedEvent>()
     val eventFlow: Flow<UserCreatedEvent> = _eventFlow.asSharedFlow()
@@ -15,4 +15,4 @@ object UserDataObserver {
     }
 }
 
-data class UserCreatedEvent(val userId: ID)
+data class UserCreatedEvent(val userId: ID, val username: String)
