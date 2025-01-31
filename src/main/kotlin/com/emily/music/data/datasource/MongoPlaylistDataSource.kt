@@ -2,8 +2,8 @@ package com.emily.music.data.datasource
 
 import com.emily.core.constants.ID
 import com.emily.music.data.entity.PlaylistEntity
-import com.emily.music.data.mappers.toPlaylist
 import com.emily.music.data.mappers.toPlaylistEntity
+import com.emily.music.data.mappers.toUpdatedPlaylistEntity
 import com.emily.music.domain.datasource.PlaylistDataSource
 import com.emily.music.domain.models.Playlist
 import org.litote.kmongo.and
@@ -22,19 +22,19 @@ class MongoPlaylistDataSource(
         return if (playlists.insertOne(entity).wasAcknowledged()) entity.id else null
     }
 
-    override suspend fun getPlaylist(id: ID): Playlist? {
-        return playlists.findOne(PlaylistEntity::id eq id)?.toPlaylist()
+    override suspend fun getPlaylist(id: ID): PlaylistEntity? {
+        return playlists.findOne(PlaylistEntity::id eq id)
     }
 
     override suspend fun updatePlaylist(playlist: Playlist): Boolean {
-        return playlists.replaceOne(PlaylistEntity::id eq playlist.id, playlist.toPlaylistEntity()).wasAcknowledged()
+        return playlists.replaceOne(PlaylistEntity::id eq playlist.id, playlist.toUpdatedPlaylistEntity()).wasAcknowledged()
     }
 
     override suspend fun removePlaylist(playlistId: ID): Boolean {
         return playlists.deleteOne(PlaylistEntity::id eq playlistId).wasAcknowledged()
     }
 
-    override suspend fun getUserFavoritesPlaylists(userId: ID): Playlist? {
-        return playlists.findOne(and(PlaylistEntity::ownerId eq userId, PlaylistEntity::title eq "Favorites"))?.toPlaylist()
+    override suspend fun getUserFavoritesPlaylists(userId: ID): PlaylistEntity? {
+        return playlists.findOne(and(PlaylistEntity::ownerId eq userId, PlaylistEntity::title eq "Favorites"))
     }
 }

@@ -1,6 +1,7 @@
 package com.emily.music.data.repository
 
 import com.emily.core.constants.ID
+import com.emily.music.data.entity.PlaylistEntity
 import com.emily.music.domain.datasource.PlaylistDataSource
 import com.emily.music.domain.models.Playlist
 import com.emily.music.domain.models.Song
@@ -15,18 +16,22 @@ class MusicRepositoryImpl(
     private val songDataSource: SongDataSource
 ): MusicRepository {
     override suspend fun addSongToPlaylist(songId: ID, playlistId: ID): Boolean {
-        var playlist = playlistDataSource.getPlaylist(playlistId) ?: return false
-        if (playlist.songs.any { it.id == songId }) {
+        val playlistEntity = playlistDataSource.getPlaylist(playlistId) ?: return false
+
+        if (playlistEntity.songs.any { id -> id == songId }) {
             return false
         }
         val songToAdd = songDataSource.getSong(songId) ?: return false
+
+        var playlist = convertEntityToPlaylist(playlistEntity)
         playlist = playlist.copy(songs = playlist.songs + songToAdd)
+
         return playlistDataSource.updatePlaylist(playlist)
     }
 
     override suspend fun addSongToFavorites(songId: ID, userId: ID): Boolean {
         val favoritesPlaylist = playlistDataSource.getUserFavoritesPlaylists(userId) ?: return false
-        val song = favoritesPlaylist.songs.find { song ->  song.id == songId} ?: return false
+        val song = songDataSource.getSong(songId) ?: return false
 
         song.isFavorite = true
         songDataSource.updateSong(song)
@@ -35,9 +40,10 @@ class MusicRepositoryImpl(
     }
 
     override suspend fun removeSongFromFavorites(songId: ID, userId: ID): Boolean {
-        val favoritesPlaylist = playlistDataSource.getUserFavoritesPlaylists(userId) ?: return false
-        val song = favoritesPlaylist.songs.find { song ->  song.id == songId} ?: return false
+        val favoritesPlaylistEntity = playlistDataSource.getUserFavoritesPlaylists(userId) ?: return false
+        val favoritesPlaylist = convertEntityToPlaylist(favoritesPlaylistEntity)
 
+        val song = favoritesPlaylist.songs.find { song -> song.id == songId} ?: return false
         song.isFavorite = false
         songDataSource.updateSong(song)
 
@@ -45,20 +51,21 @@ class MusicRepositoryImpl(
     }
 
     override suspend fun removeSongFromPlaylist(songId: ID, playlistId: ID): Boolean {
-        var playlist = playlistDataSource.getPlaylist(playlistId) ?: return false
-        if (!playlist.songs.any { it.id == songId }) {
+        var playlistEntity = playlistDataSource.getPlaylist(playlistId) ?: return false
+        if (!playlistEntity.songs.any { id -> id == songId }) {
             return false
         }
-        val updatedSongs = playlist.songs.filter { it.id != songId }
-        playlist = playlist.copy(songs = updatedSongs)
-        return playlistDataSource.updatePlaylist(playlist)
+        val updatedSongs = playlistEntity.songs.filter { id -> id != songId }
+        playlistEntity = playlistEntity.copy(songs = updatedSongs)
+        return playlistDataSource.updatePlaylist(convertEntityToPlaylist(playlistEntity))
     }
 
     override suspend fun getPlaylist(playlistId: ID): Playlist? {
-        return playlistDataSource.getPlaylist(playlistId)
+        val playlist = playlistDataSource.getPlaylist(playlistId) ?: return null
+        return convertEntityToPlaylist(playlist)
     }
 
-    override suspend fun createPlaylistForUser(playlist: Playlist, userId: ID): String? {
+    override suspend fun createPlaylistForUser(playlist: Playlist, userId: ID): ID? {
         var userData = userDataDataSource.getUserData(userId)
         if (userData == null) // if userData doesn't exist yet
             if (!userDataDataSource.insertUserData(userId)) return null // if there was an error inserting
@@ -80,10 +87,11 @@ class MusicRepositoryImpl(
 
     override suspend fun getUserPlaylists(userId: ID): List<Playlist> {
         val userData = userDataDataSource.getUserData(userId) ?: return emptyList()
-        var playlists = emptyList<Playlist>()
+        val playlists = mutableListOf<Playlist>()
         userData.playlists.forEach { id ->
-            playlistDataSource.getPlaylist(id)?.let { playlist ->
-                playlists += playlist
+            playlistDataSource.getPlaylist(id)?.let { playlistEntity ->
+                val playlist = convertEntityToPlaylist(playlistEntity)
+                playlists.add(playlist)
             }
         }
         return playlists
@@ -99,6 +107,24 @@ class MusicRepositoryImpl(
 
     override suspend fun getUserData(userId: ID): UserData? {
         return userDataDataSource.getUserData(userId)
+    }
+
+    private suspend fun convertEntityToPlaylist(entity: PlaylistEntity): Playlist {
+        var playlist = Playlist(
+            title = entity.title,
+            ownerName = entity.ownerName,
+            ownerId = entity.ownerId,
+            id = entity.id
+        )
+
+        val songs = mutableListOf<Song>()
+        for (songId in entity.songs) {
+            val song = songDataSource.getSong(songId)
+            if (song != null) songs.add(song)
+        }
+
+        playlist = playlist.copy(songs = songs)
+        return playlist
     }
 }
 
