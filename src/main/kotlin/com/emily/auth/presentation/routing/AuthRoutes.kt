@@ -116,6 +116,10 @@ fun Route.signIn(
                     TokenClaim(
                         name = "userId",
                         value = user.id!!
+                    ),
+                    TokenClaim(
+                        name = "username",
+                        value = user.username
                     )
                 )
 

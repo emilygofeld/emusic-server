@@ -19,7 +19,7 @@ object RequestDeserializer: JsonContentPolymorphicSerializer<MusicRequest>(Music
             ProtocolCode.GET_USER_DATA -> MusicRequest.GetUserData.serializer()
             ProtocolCode.GET_USER_PLAYLISTS -> MusicRequest.GetUserPlaylists.serializer()
             ProtocolCode.ADD_SONG_TO_FAVORITES -> MusicRequest.AddSongToFavorites.serializer()
-            ProtocolCode.DELETE_SONG_FROM_FAVORITES -> MusicRequest.DeleteSongFromPlaylist.serializer()
+            ProtocolCode.DELETE_SONG_FROM_FAVORITES -> MusicRequest.DeleteSongFromFavorites.serializer()
             else -> throw SerializationException("Unknown request code: $code")
         }
     }
