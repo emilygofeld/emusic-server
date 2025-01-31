@@ -11,7 +11,7 @@ interface MusicRepository {
     suspend fun removeSongFromFavorites(songId: ID, userId: ID): Boolean
     suspend fun removeSongFromPlaylist(songId: ID, playlistId: ID): Boolean
     suspend fun getPlaylist(playlistId: ID): Playlist?
-    suspend fun createPlaylistForUser(playlist: Playlist, userId: ID): String?
+    suspend fun createPlaylistForUser(playlist: Playlist, userId: ID): ID?
     suspend fun removePlaylistFromUser(playlistId: ID, userId: ID): Boolean
     suspend fun getUserPlaylists(userId: ID): List<Playlist>
     suspend fun getSong(songId: ID): Song?
