@@ -31,10 +31,9 @@ fun Route.getAndDeserializeRequest(
                 return@post
             }
 
-//            val controller by inject<Controller> {parametersOf(call)}
             val controller = Controller(musicRepository, call)
 
-            println(Json.decodeFromString(RequestDeserializer, jsonRequest))
+            println(Json.decodeFromString(RequestDeserializer, jsonRequest)) // for testing purposes
 
             when (val request = Json.decodeFromString(RequestDeserializer, jsonRequest)) {
                 is MusicRequest.AddSongToPlaylist ->
@@ -50,9 +49,9 @@ fun Route.getAndDeserializeRequest(
                 is MusicRequest.GetCurrUserPlaylists ->
                     controller.getUserPlaylists(connectedUserId)
                 is MusicRequest.GetPlaylist ->
-                    controller.getPlaylist(request.playlistId)
+                    controller.getPlaylist(request.playlistId, connectedUserId)
                 is MusicRequest.GetSong ->
-                    controller.getSong(request.songId)
+                    controller.getSong(request.songId, connectedUserId)
                 is MusicRequest.GetUserData ->
                     controller.getUserData(request.userId)
                 is MusicRequest.GetUserPlaylists ->

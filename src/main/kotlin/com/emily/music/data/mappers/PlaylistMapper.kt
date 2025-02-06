@@ -21,13 +21,3 @@ fun Playlist.toPlaylistEntity(): PlaylistEntity {
         ownerId = ownerId
     )
 }
-
-fun Playlist.toUpdatedPlaylistEntity(): PlaylistEntity {
-    return PlaylistEntity(
-        title = title,
-        songs = songs.map { song -> song.id },
-        ownerName = ownerName,
-        ownerId = ownerId,
-        id = id
-    )
-}

@@ -3,7 +3,7 @@ package com.emily.music.data.mappers
 import com.emily.music.data.entity.SongEntity
 import com.emily.music.domain.models.Song
 
-fun SongEntity.toSong(): Song {
+fun SongEntity.toSong(isFavorite: Boolean): Song {
     return Song(
         title = title,
         artists = artists,
@@ -19,7 +19,6 @@ fun Song.toSongEntity(): SongEntity {
         title = title,
         artists = artists,
         length = length,
-        isFavorite = isFavorite,
         url = url,
         id = id
     )

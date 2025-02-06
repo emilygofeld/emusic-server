@@ -83,16 +83,17 @@ class Controller(
     }
 
     suspend fun getUserPlaylists(
-        userId: String,
+        userId: ID,
     ) {
         val playlists = musicRepository.getUserPlaylists(userId)
         call.sendResponse(MusicResponse.GetUserPlaylists(playlists = playlists))
     }
 
     suspend fun getPlaylist(
-        playlistId: String,
+        playlistId: ID,
+        userId: ID
     ) {
-        val playlist = musicRepository.getPlaylist(playlistId)
+        val playlist = musicRepository.getPlaylist(playlistId, userId)
 
         if (playlist == null)
             call.sendError("Server Error: Incorrect Id")
@@ -101,9 +102,10 @@ class Controller(
     }
 
     suspend fun getSong(
-        songId: String,
+        songId: ID,
+        userId: ID
     ) {
-        val song = musicRepository.getSong(songId)
+        val song = musicRepository.getSong(songId, userId)
 
         if (song == null)
             call.sendError("Server Error: Incorrect id")

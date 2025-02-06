@@ -7,7 +7,7 @@ import com.emily.music.domain.models.Playlist
 interface PlaylistDataSource {
     suspend fun insertPlaylist(playlist: Playlist): String?
     suspend fun getPlaylist(id: ID): PlaylistEntity?
-    suspend fun updatePlaylist(playlist: Playlist): Boolean
+    suspend fun updatePlaylist(playlistEntity: PlaylistEntity): Boolean
     suspend fun removePlaylist(playlistId: ID): Boolean
     suspend fun getUserFavoritesPlaylists(userId: ID): PlaylistEntity?
 }

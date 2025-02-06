@@ -3,7 +3,6 @@ package com.emily.music.data.datasource
 import com.emily.core.constants.ID
 import com.emily.music.data.entity.PlaylistEntity
 import com.emily.music.data.mappers.toPlaylistEntity
-import com.emily.music.data.mappers.toUpdatedPlaylistEntity
 import com.emily.music.domain.datasource.PlaylistDataSource
 import com.emily.music.domain.models.Playlist
 import org.litote.kmongo.and
@@ -26,8 +25,8 @@ class MongoPlaylistDataSource(
         return playlists.findOne(PlaylistEntity::id eq id)
     }
 
-    override suspend fun updatePlaylist(playlist: Playlist): Boolean {
-        return playlists.replaceOne(PlaylistEntity::id eq playlist.id, playlist.toUpdatedPlaylistEntity()).wasAcknowledged()
+    override suspend fun updatePlaylist(playlistEntity: PlaylistEntity): Boolean {
+        return playlists.replaceOne(PlaylistEntity::id eq playlistEntity.id, playlistEntity).wasAcknowledged()
     }
 
     override suspend fun removePlaylist(playlistId: ID): Boolean {
