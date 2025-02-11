@@ -2,6 +2,7 @@ package com.emily.music.data.repository
 
 import com.emily.core.constants.ID
 import com.emily.music.data.entity.PlaylistEntity
+import com.emily.music.data.mappers.toPlaylistEntity
 import com.emily.music.data.mappers.toSong
 import com.emily.music.domain.datasource.PlaylistDataSource
 import com.emily.music.domain.models.Playlist
@@ -95,6 +96,11 @@ class MusicRepositoryImpl(
     override suspend fun getUserData(userId: ID): UserData? {
         return userDataDataSource.getUserData(userId)
     }
+
+    override suspend fun updatePlaylist(playlist: Playlist): Boolean {
+        return playlistDataSource.updatePlaylist(playlist.toPlaylistEntity())
+    }
+
 
     private suspend fun convertEntityToPlaylist(entity: PlaylistEntity, userId: ID): Playlist {
         var playlist = Playlist(

@@ -77,7 +77,7 @@ class Controller(
         val userData = musicRepository.getUserData(userId)
 
         if (userData == null)
-            call.sendError("Server Error")
+            call.sendError("Server Error: getting user data")
         else
             call.sendResponse(MusicResponse.GetUserData(userData = userData))
     }
@@ -115,14 +115,21 @@ class Controller(
 
     suspend fun addSongToFavorites(songId: ID, userId: ID) {
         if (!musicRepository.addSongToFavorites(songId, userId))
-            call.sendError("Server Error")
+            call.sendError("Server Error: adding song to favorites")
         else
             call.sendResponse(MusicResponse.SuccessResponse(data = null))
     }
 
     suspend fun removeSongFromFavorites(songId: ID, userId: ID) {
         if (!musicRepository.removeSongFromFavorites(songId, userId))
-            call.sendError("Server Error")
+            call.sendError("Server Error: removing song from favorites")
+        else
+            call.sendResponse(MusicResponse.SuccessResponse(data = null))
+    }
+
+    suspend fun updatePlaylist(playlist: Playlist) {
+        if (!musicRepository.updatePlaylist(playlist))
+            call.sendError("Server Error: updating playlist")
         else
             call.sendResponse(MusicResponse.SuccessResponse(data = null))
     }

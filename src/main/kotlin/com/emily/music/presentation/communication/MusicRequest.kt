@@ -2,6 +2,7 @@ package com.emily.music.presentation.communication
 
 import com.emily.core.constants.ID
 import com.emily.core.constants.ProtocolCode
+import com.emily.music.domain.models.Playlist
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -10,6 +11,8 @@ sealed class MusicRequest {
 
     @Serializable
     data class CreatePlaylist(override val code: Int = ProtocolCode.CREATE_PLAYLIST, val title: String): MusicRequest()
+    @Serializable
+    data class UpdatePlaylist(override val code: Int = ProtocolCode.UPDATE_PLAYLIST, val playlist: Playlist): MusicRequest()
     @Serializable
     data class DeletePlaylist(override val code: Int = ProtocolCode.DELETE_PLAYLIST, val playlistId: ID): MusicRequest()
     @Serializable

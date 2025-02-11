@@ -13,6 +13,7 @@ object ProtocolCode {
     const val GET_CURR_USER_PLAYLISTS = 160
     const val ADD_SONG_TO_FAVORITES = 170
     const val DELETE_SONG_FROM_FAVORITES = 180
+    const val UPDATE_PLAYLIST = 190
     const val GET_SONG = 200
     const val GET_USER_DATA = 300
     const val GET_CURR_USER_DATA = 310
