@@ -19,4 +19,5 @@ object ProtocolCode {
     const val GET_CURR_USER_DATA = 310
     const val SUCCESS = 400
     const val ERROR = 500
+    const val GET_SEARCH_RESULTS = 600
 }

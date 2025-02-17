@@ -5,4 +5,5 @@ import com.emily.music.data.entity.SongEntity
 
 interface SongDataSource {
     suspend fun getSong(songId: ID): SongEntity?
+    suspend fun getSongsBySearch(search: String): List<SongEntity>
 }

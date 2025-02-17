@@ -101,6 +101,13 @@ class MusicRepositoryImpl(
         return playlistDataSource.updatePlaylist(playlist.toPlaylistEntity())
     }
 
+    override suspend fun getSearchResults(search: String, userId: ID): List<Song> {
+        if (search.isEmpty()) return emptyList()
+
+        val entityList = songDataSource.getSongsBySearch(search)
+        val songList = entityList.map { songEntity -> songEntity.toSong(isSongFavorite(songEntity.id, userId)) }
+        return songList
+    }
 
     private suspend fun convertEntityToPlaylist(entity: PlaylistEntity, userId: ID): Playlist {
         var playlist = Playlist(
@@ -120,7 +127,7 @@ class MusicRepositoryImpl(
         return playlist
     }
 
-    private suspend fun isSongFavorite (songId: ID, userId: ID): Boolean {
+    private suspend fun isSongFavorite(songId: ID, userId: ID): Boolean {
         val favoritesPlaylist = playlistDataSource.getUserFavoritesPlaylists(userId) ?: return false
         return favoritesPlaylist.songs.contains(songId)
     }

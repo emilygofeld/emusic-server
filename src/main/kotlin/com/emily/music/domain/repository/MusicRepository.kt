@@ -18,4 +18,5 @@ interface MusicRepository {
     suspend fun insertUserData(userId: ID): Boolean
     suspend fun getUserData(userId: ID): UserData?
     suspend fun updatePlaylist(playlist: Playlist): Boolean
+    suspend fun getSearchResults(search: String, userId: ID): List<Song>
 }

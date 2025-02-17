@@ -133,4 +133,9 @@ class Controller(
         else
             call.sendResponse(MusicResponse.SuccessResponse(data = null))
     }
+
+    suspend fun getSearchResult(search: String, userId: ID) {
+        val result = musicRepository.getSearchResults(search, userId)
+        call.sendResponse(MusicResponse.GetSearchResult(songs = result))
+    }
 }
