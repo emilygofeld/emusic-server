@@ -42,7 +42,6 @@ fun Application.module() {
 
     GlobalScope.launch {
         UserCreationListener.listen(musicRepository)
-
     }
 
     configureSerialization()

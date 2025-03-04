@@ -20,10 +20,13 @@ class MongoSongDataSource(
     override suspend fun getSongsBySearch(search: String): List<SongEntity> {
         val searchList = mutableSetOf<SongEntity>()
 
-        searchList.addAll(songs.find(SongEntity::title eq search).toList())
+        // search for song titles that match search
+        val titleFilter = Filters.regex("title", "^$search", "i")
+        searchList.addAll(songs.find(titleFilter).toList())
 
-        val filter = Filters.regex("title", ".*$search.*", "i") // "i" for case-insensitive
-        searchList.addAll(songs.find(filter).toList())
+        // search for songs where any artist matches the search
+        val artistFilter = Filters.regex("artists", "^$search", "i")
+        searchList.addAll(songs.find(artistFilter).toList())
 
         return searchList.toList()
     }
