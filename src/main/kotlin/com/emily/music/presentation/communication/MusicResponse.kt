@@ -26,4 +26,6 @@ sealed class MusicResponse {
     data class GetUserData(override val code: Int = ProtocolCode.GET_USER_DATA, val userData: UserData): MusicResponse()
     @Serializable
     data class GetSearchResult(override val code: Int = ProtocolCode.GET_SEARCH_RESULTS, val songs: List<Song>): MusicResponse()
+    @Serializable
+    data class GetGlobalFavoriteSongs(override val code: Int = ProtocolCode.GET_GLOBAL_FAVORITE_SONGS, val songs: List<Song>): MusicResponse()
 }

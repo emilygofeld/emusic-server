@@ -11,6 +11,7 @@ data class SongEntity(
     val artists: List<String>,
     val length: Int,
     val url: String,
+    var favoriteCount: Int,
     @BsonId
     val id: ID = ObjectId().toString()
 )

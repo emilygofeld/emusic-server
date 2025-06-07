@@ -17,6 +17,10 @@ class MongoSongDataSource(
         return songs.findOne(SongEntity::id eq songId)
     }
 
+    override suspend fun updateSong(song: SongEntity): Boolean {
+        return songs.replaceOne(SongEntity::id eq song.id, song).wasAcknowledged()
+    }
+
     override suspend fun getSongsBySearch(search: String): List<SongEntity> {
         val searchList = mutableSetOf<SongEntity>()
 
@@ -30,4 +34,12 @@ class MongoSongDataSource(
 
         return searchList.toList()
     }
+
+    override suspend fun getGlobalFavoriteSongs(): List<SongEntity> {
+        return songs.find()
+            .descendingSort(SongEntity::favoriteCount)
+            .limit(8)
+            .toList()
+    }
+
 }

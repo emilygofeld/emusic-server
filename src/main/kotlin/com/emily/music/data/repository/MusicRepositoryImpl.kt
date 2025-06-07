@@ -29,11 +29,25 @@ class MusicRepositoryImpl(
 
     override suspend fun addSongToFavorites(songId: ID, userId: ID): Boolean {
         val favoritesPlaylistEntity = playlistDataSource.getUserFavoritesPlaylists(userId) ?: return false
+
+        val song = songDataSource.getSong(songId)
+        if (song != null) {
+            song.favoriteCount += 1
+            songDataSource.updateSong(song)
+        }
+
         return addSongToPlaylist(songId, favoritesPlaylistEntity.id)
     }
 
     override suspend fun removeSongFromFavorites(songId: ID, userId: ID): Boolean {
         val favoritesPlaylistEntity = playlistDataSource.getUserFavoritesPlaylists(userId) ?: return false
+
+        val song = songDataSource.getSong(songId)
+        if (song != null) {
+            song.favoriteCount -= 1
+            songDataSource.updateSong(song)
+        }
+
         return removeSongFromPlaylist(songId, favoritesPlaylistEntity.id)
     }
 
@@ -106,6 +120,14 @@ class MusicRepositoryImpl(
 
         val entityList = songDataSource.getSongsBySearch(search)
         val songList = entityList.map { songEntity -> songEntity.toSong(isSongFavorite(songEntity.id, userId)) }
+        return songList
+    }
+
+    override suspend fun getGlobalFavoriteSongs(): List<Song> {
+        val entityList = songDataSource.getGlobalFavoriteSongs()
+
+        // default to false bc isFavorite is not important in this case
+        val songList = entityList.map { songEntity -> songEntity.toSong(false)}
         return songList
     }
 

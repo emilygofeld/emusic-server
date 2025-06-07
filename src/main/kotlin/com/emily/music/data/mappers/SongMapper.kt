@@ -10,16 +10,18 @@ fun SongEntity.toSong(isFavorite: Boolean): Song {
         length = length,
         isFavorite = isFavorite,
         url = url,
+        favoriteCount = favoriteCount,
         id = id
     )
 }
 
-//fun Song.toSongEntity(): SongEntity {
-//    return SongEntity(
-//        title = title,
-//        artists = artists,
-//        length = length,
-//        url = url,
-//        id = id
-//    )
-//}
+fun Song.toSongEntity(): SongEntity {
+    return SongEntity(
+        title = title,
+        artists = artists,
+        length = length,
+        url = url,
+        favoriteCount = favoriteCount,
+        id = id
+    )
+}

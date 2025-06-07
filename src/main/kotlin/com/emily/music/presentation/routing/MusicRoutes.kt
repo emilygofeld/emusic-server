@@ -64,6 +64,8 @@ fun Route.getAndDeserializeRequest(
                     controller.updatePlaylist(request.playlist)
                 is MusicRequest.GetSearchResults ->
                     controller.getSearchResult(request.search, connectedUserId)
+                is MusicRequest.GetGlobalFavoriteSongs ->
+                    controller.getGlobalFavoriteSongs()
             }
         }
     }

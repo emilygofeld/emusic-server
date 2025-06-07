@@ -138,4 +138,9 @@ class Controller(
         val result = musicRepository.getSearchResults(search, userId)
         call.sendResponse(MusicResponse.GetSearchResult(songs = result))
     }
+
+    suspend fun getGlobalFavoriteSongs() {
+        val faveSongs = musicRepository.getGlobalFavoriteSongs()
+        call.sendResponse(MusicResponse.GetGlobalFavoriteSongs(songs = faveSongs))
+    }
 }

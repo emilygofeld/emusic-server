@@ -10,5 +10,6 @@ class Song(
     val length: Int,
     var isFavorite: Boolean = false,
     val url: String = "",
+    var favoriteCount: Int = 0,
     val id: ID = ""
 )
