@@ -1,17 +1,15 @@
 package com.emily.core
 
 import com.emily.core.constants.ID
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.*
 
 object UserCreationObserver {
-
-    private val _eventFlow = MutableSharedFlow<UserCreatedEvent>()
-    val eventFlow: Flow<UserCreatedEvent> = _eventFlow.asSharedFlow()
+    private val _events = Channel<UserCreatedEvent>()
+    val events = _events.receiveAsFlow()
 
     suspend fun sendEvent(event: UserCreatedEvent) {
-        _eventFlow.emit(event)
+        _events.send(event)
     }
 }
 

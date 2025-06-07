@@ -6,7 +6,7 @@ import com.emily.music.domain.repository.MusicRepository
 
 object UserCreationListener {
     suspend fun listen(musicRepository: MusicRepository) {
-        UserCreationObserver.eventFlow.collect { event ->
+        UserCreationObserver.events.collect { event ->
             musicRepository.insertUserData(event.userId)
 
             val playlist = Playlist(
