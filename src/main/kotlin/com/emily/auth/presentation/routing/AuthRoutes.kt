@@ -2,6 +2,7 @@ package com.emily.auth.presentation.routing
 
 import com.emily.auth.domain.models.User
 import com.emily.auth.domain.models.UserDataSource
+import com.emily.auth.domain.security.encrypt.EncryptionService
 import com.emily.auth.domain.security.hashing.HashingService
 import com.emily.auth.domain.security.hashing.SaltedHash
 import com.emily.auth.domain.security.token.TokenClaim
@@ -20,13 +21,17 @@ import io.ktor.server.routing.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
+val encryptionService: EncryptionService = EncryptionService(
+    secret = System.getenv("AES_SECRET"),
+    iv = System.getenv("AES_IV")
+)
 
 suspend fun RoutingCall.sendError(message: String) {
     val response: AuthResponse = AuthResponse.ErrorResponse(message)
 
     respond(
         status = HttpStatusCode.BadRequest,
-        message = Json.encodeToString(response)
+        message = encryptionService.encrypt(Json.encodeToString(response))
     )
 }
 
@@ -42,20 +47,25 @@ fun Route.signUp(
             return@post
         }
 
-        val verify = Verify.verifySignUp(request)
+        val username = encryptionService.decrypt(request.username)
+        val password = encryptionService.decrypt(request.password)
+
+        val decryptedRequest = AuthRequest(username, password)
+
+        val verify = Verify.verifySignUp(decryptedRequest)
         if (!verify.success) {
             call.sendError(verify.message)
             return@post
         }
 
-        if (userDataSource.getUserByUsername(request.username) != null) {
+        if (userDataSource.getUserByUsername(username) != null) {
             call.sendError("username is already taken")
             return@post
         }
 
-        val saltedHash = hashingService.generateSaltedHash(request.password)
+        val saltedHash = hashingService.generateSaltedHash(password)
         var user = User(
-            username = request.username,
+            username = username,
             password = saltedHash.hash,
             salt = saltedHash.salt
         )
@@ -81,7 +91,7 @@ fun Route.signUp(
         UserCreationObserver.sendEvent(UserCreatedEvent(userId = user.id!!, user.username))
 
         call.respond(
-            message = Json.encodeToString(AuthResponse.serializer(), AuthResponse.SuccessResponse(token)),
+            message = encryptionService.encrypt(Json.encodeToString(AuthResponse.serializer(), AuthResponse.SuccessResponse(token))),
             status = HttpStatusCode.OK
         )
     }
@@ -99,11 +109,13 @@ fun Route.signIn(
             return@post
         }
 
-        val user = userDataSource.getUserByUsername(request.username)
+        val username = encryptionService.decrypt(request.username)
+        val password = encryptionService.decrypt(request.password)
+        val user = userDataSource.getUserByUsername(username)
 
         if (user != null) {
             val isValidPassword = hashingService.verify(
-                value = request.password,
+                value = password,
                 saltedHash = SaltedHash(
                     hash = user.password,
                     salt = user.salt
@@ -125,7 +137,7 @@ fun Route.signIn(
 
                 // send success status
                 call.respond(
-                    message = Json.encodeToString(AuthResponse.serializer(), AuthResponse.SuccessResponse(token)),
+                    message = encryptionService.encrypt(Json.encodeToString(AuthResponse.serializer(), AuthResponse.SuccessResponse(token))),
                     status = HttpStatusCode.OK
                 )
                 return@post
